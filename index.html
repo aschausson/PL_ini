@@ -1,79 +1,34 @@
-[~/javascript/PLgrado/ini(master)]$ cat ini.js
-"use strict"; // Use ECMAScript 5 strict mode in browsers that support it
+[~/javascript/PLgrado/ini(master)]$ cat index.html 
+<html>
+  <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+     <title>INI files</title>
+     <link href="global.css" rel="stylesheet" type="text/css">
+<!--
+     <link rel="shortcut icon" href="logo.png" />
+-->
+     <link rel="shortcut icon" href="etsiiull.png" type="image/x-icon">
 
-$(document).ready(function() {
-   $("#fileinput").change(calculate);
-});
+     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
-function calculate(evt) {
-  var f = evt.target.files[0]; 
-
-  if (f) {
-    var r = new FileReader();
-    r.onload = function(e) { 
-      var contents = e.target.result;
-      
-      var tokens = lexer(contents);
-      var pretty = tokensToString(tokens);
-      
-      out.className = 'unhidden';
-      initialinput.innerHTML = contents;
-      finaloutput.innerHTML = pretty;
-    }
-    r.readAsText(f);
-  } else { 
-    alert("Failed to load file");
-  }
-}
-
-var temp = '<li> <span class = "<%= token.type %>"> <%= match %> </span>\n';
-
-function tokensToString(tokens) {
-   var r = '';
-   for(var i=0; i < tokens.length; i++) {
-     var t = tokens[i]
-     var s = JSON.stringify(t, undefined, 2);
-     s = _.template(temp, {token: t, match: s});
-     r += s;
-   }
-   return '<ol>\n'+r+'</ol>';
-}
-
-function lexer(input) {
-  var blanks         = /^\s+/;
-  var iniheader      = /^\[([^\]\r\n]+)\]/;
-  var comments       = /^[;#](.*)/;
-  var nameEqualValue = /^([^=;\r\n]+)=([^;\r\n]*)/;
-  var any            = /^(.|\n)+/;
-
-  var out = [];
-  var m = null;
-
-  while (input != '') {
-    if (m = blanks.exec(input)) {
-      input = input.substr(m.index+m[0].length);
-      out.push({ type : 'blanks', match: m });
-    }
-    else if (m = iniheader.exec(input)) {
-      input = input.substr(m.index+m[0].length);
-      out.push({ type: 'header', match: m });
-    }
-    else if (m = comments.exec(input)) {
-      input = input.substr(m.index+m[0].length);
-      out.push({ type: 'comments', match: m });
-    }
-    else if (m = nameEqualValue.exec(input)) {
-      input = input.substr(m.index+m[0].length);
-      out.push({ type: 'nameEqualValue', match: m });
-    }
-    else if (m = any.exec(input)) {
-      out.push({ type: 'error', match: m });
-      input = '';
-    }
-    else {
-      alert("Fatal Error!"+substr(input,0,20));
-      input = '';
-    }
-  }
-  return out;
-}
+     <script type="text/javascript" src="ini.js"></script>
+  </head>
+  <body>
+    <h1>INI files</h1>
+    <input type="file" id="fileinput" />
+    <div id="out" class="hidden">
+    <table>
+      <tr><th>Original</th><th>Tokens</th></tr>
+      <tr>
+        <td>
+          <pre class="input" id="initialinput"></pre>
+        </td>
+        <td>
+          <pre class="output" id="finaloutput"></pre>
+        </td>
+      </tr>
+    </table>
+    </div>
+  </body>
+</html>
